@@ -1,0 +1,12 @@
+[Unit]
+Description=Periodic health check for openpilot agricultural stack
+After=openpilot-agri.service
+Wants=openpilot-agri.service
+
+[Service]
+Type=oneshot
+User=__RUN_USER__
+Group=__RUN_GROUP__
+WorkingDirectory=__REPO_DIR__
+Environment=AGRI_CAN_IFACE=can0
+ExecStart=/bin/bash -lc '__REPO_DIR__/scripts/check_agri_stack_health.sh ${AGRI_CAN_IFACE}'

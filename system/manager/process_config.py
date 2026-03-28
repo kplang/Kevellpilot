@@ -4,7 +4,7 @@ import platform
 
 from cereal import car
 from openpilot.common.params import Params
-from openpilot.system.hardware import PC, TICI
+from openpilot.system.hardware import PC, TICI, JETSON
 from openpilot.system.manager.process import PythonProcess, NativeProcess, DaemonProcess
 
 WEBCAM = os.getenv("USE_WEBCAM") is not None
@@ -48,6 +48,12 @@ def not_long_maneuver(started: bool, params: Params, CP: car.CarParams) -> bool:
 
 def qcomgps(started: bool, params: Params, CP: car.CarParams) -> bool:
   return started and not ublox_available()
+
+def agri_socketcan_enabled() -> bool:
+  return (os.getenv("AGRI_MODE") is not None) and (os.getenv("AGRI_SOCKETCAN") is not None) and JETSON
+
+def pandad_enabled() -> bool:
+  return os.getenv("AGRI_DISABLE_PANDAD") is None
 
 def always_run(started: bool, params: Params, CP: car.CarParams) -> bool:
   return True
@@ -96,7 +102,9 @@ procs = [
   PythonProcess("deleter", "system.loggerd.deleter", always_run),
   PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=(WEBCAM or not PC)),
   PythonProcess("qcomgpsd", "system.qcomgpsd.qcomgpsd", qcomgps, enabled=TICI),
-  PythonProcess("pandad", "selfdrive.pandad.pandad", always_run),
+  PythonProcess("pandad", "selfdrive.pandad.pandad", always_run, enabled=pandad_enabled()),
+  PythonProcess("jetson_can_bridge", "selfdrive.agricultural.jetson_can_bridge", only_onroad,
+                enabled=agri_socketcan_enabled()),
   PythonProcess("paramsd", "selfdrive.locationd.paramsd", only_onroad),
   PythonProcess("lagd", "selfdrive.locationd.lagd", only_onroad),
   PythonProcess("ubloxd", "system.ubloxd.ubloxd", ublox, enabled=TICI),
@@ -111,6 +119,12 @@ procs = [
   PythonProcess("uploader", "system.loggerd.uploader", always_run),
   PythonProcess("statsd", "system.statsd", always_run),
   PythonProcess("feedbackd", "selfdrive.ui.feedback.feedbackd", only_onroad),
+
+  # agricultural processes
+  PythonProcess("agri_supervisor", "selfdrive.agricultural.supervisor_watchdog", only_onroad,
+                enabled=os.getenv("AGRI_MODE") is not None),
+  PythonProcess("agri_planner", "selfdrive.agricultural.field_mission_planner", only_onroad,
+                enabled=os.getenv("AGRI_MODE") is not None),
 
   # debug procs
   NativeProcess("bridge", "cereal/messaging", ["./bridge"], notcar),

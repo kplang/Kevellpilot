@@ -10,10 +10,25 @@ $Cxx.namespace("cereal");
 # DO rename the structs
 # DON'T change the identifier (e.g. @0x81c2f05a394cf4af)
 
-struct CustomReserved0 @0x81c2f05a394cf4af {
+struct AgriMissionState @0x81c2f05a394cf4af {
+  # Published by field_mission_planner at 10 Hz
+  state            @0 :Text;    # MissionState name: IDLE/RUNNING/HEADLAND/PAUSED/COMPLETE/ABORT
+  rowIndex         @1 :UInt16;  # current row index (0-based)
+  waypointIndex    @2 :UInt16;  # waypoint index within current row
+  totalRows        @3 :UInt16;  # total rows in the mission
+  desiredCurvature @4 :Float32; # pure-pursuit curvature setpoint (1/m, +left)
+  crossTrackErrorM @5 :Float32; # perpendicular distance from row line (metres)
+  geofenceOk       @6 :Bool;    # True when tractor inside field boundary
 }
 
-struct CustomReserved1 @0xaedffd8f31e7b55d {
+struct AgriSupervisorState @0xaedffd8f31e7b55d {
+  # Published by supervisor_watchdog at 20 Hz
+  state       @0 :Text;     # SupervisorState name: INIT/NOMINAL/DEGRADED/ESTOP
+  longEnabled @1 :Bool;     # True = longitudinal control authorised
+  estopReason @2 :Text;     # last ESTOP trigger (empty when nominal)
+  speedOk     @3 :Bool;
+  gnssOk      @4 :Bool;
+  plannerOk   @5 :Bool;
 }
 
 struct CustomReserved2 @0xf35cc4560bbf6ec2 {

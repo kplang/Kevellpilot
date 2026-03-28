@@ -84,11 +84,11 @@ void finishInstall() {
   BeginDrawing();
     ClearBackground(BLACK);
     if (tici_device) {
-      const char *m = "Finishing install...";
+      const char *m = "KEVELL MOTORS: Finishing install...";
       int text_width = MeasureText(m, FONT_SIZE);
       DrawTextEx(font_display, m, (Vector2){(float)(GetScreenWidth() - text_width)/2 + FONT_SIZE, (float)(GetScreenHeight() - FONT_SIZE)/2}, FONT_SIZE, 0, WHITE);
     } else {
-      DrawTextEx(font_display, "finishing setup", (Vector2){12, 0}, 77, 0, (Color){255, 255, 255, (unsigned char)(255 * 0.9)});
+      DrawTextEx(font_display, "finishing kevell setup", (Vector2){12, 0}, 77, 0, (Color){255, 255, 255, (unsigned char)(255 * 0.9)});
     }
   EndDrawing();
   util::sleep_for(60 * 1000);
@@ -98,7 +98,8 @@ void renderProgress(int progress) {
   BeginDrawing();
     ClearBackground(BLACK);
     if (tici_device) {
-      DrawTextEx(font_inter, "Installing...", (Vector2){150, 290}, 110, 0, WHITE);
+      DrawTextEx(font_inter, "KEVELL MOTORS", (Vector2){150, 250}, 92, 0, WHITE);
+      DrawTextEx(font_roman, "A Companion", (Vector2){150, 350}, 64, 0, (Color){186, 201, 255, 255});
       Rectangle bar = {150, 570, (float)GetScreenWidth() - 300, 72};
       DrawRectangleRec(bar, (Color){41, 41, 41, 255});
       progress = std::clamp(progress, 0, 100);
@@ -106,7 +107,8 @@ void renderProgress(int progress) {
       DrawRectangleRec(bar, (Color){70, 91, 234, 255});
       DrawTextEx(font_inter, (std::to_string(progress) + "%").c_str(), (Vector2){150, 670}, 85, 0, WHITE);
     } else {
-      DrawTextEx(font_display, "installing...", (Vector2){12, 0}, 77, 0, (Color){255, 255, 255, (unsigned char)(255 * 0.9)});
+      DrawTextEx(font_display, "KEVELL MOTORS", (Vector2){12, 0}, 64, 0, (Color){255, 255, 255, (unsigned char)(255 * 0.9)});
+      DrawTextEx(font_roman, "A Companion", (Vector2){12, 68}, 34, 0, (Color){190, 204, 255, (unsigned char)(255 * 0.9)});
       const std::string percent_str = std::to_string(progress) + "%";
       DrawTextEx(font_inter, percent_str.c_str(), (Vector2){12, (float)(GetScreenHeight() - 154 + 20)}, 154, 0,
                  (Color){255, 255, 255, (unsigned char)(255 * 0.9 * 0.65)});

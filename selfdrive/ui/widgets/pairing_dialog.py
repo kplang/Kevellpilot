@@ -15,6 +15,10 @@ from openpilot.system.ui.widgets.button import IconButton
 from openpilot.selfdrive.ui.ui_state import ui_state
 
 
+COMPANY_NAME = "KEVELL MOTORS"
+COMPANY_SLOGAN = "A Companion"
+
+
 class PairingDialog(Widget):
   """Dialog for device pairing with QR code."""
 
@@ -24,9 +28,14 @@ class PairingDialog(Widget):
     super().__init__()
     self.params = Params()
     self.qr_texture: rl.Texture | None = None
+    self.company_logo: rl.Texture | None = None
     self.last_qr_generation = float('-inf')
     self._close_btn = IconButton(gui_app.texture("icons/close.png", 80, 80))
     self._close_btn.set_click_callback(gui_app.pop_widget)
+    try:
+      self.company_logo = gui_app.texture("images/company_logo.png", 260, 90, keep_aspect_ratio=True)
+    except Exception:
+      self.company_logo = None
 
   def _get_pairing_url(self) -> str:
     try:
@@ -72,7 +81,7 @@ class PairingDialog(Widget):
       gui_app.pop_widget()
 
   def _render(self, rect: rl.Rectangle) -> int:
-    rl.clear_background(rl.Color(224, 224, 224, 255))
+    rl.clear_background(rl.Color(214, 224, 236, 255))
 
     self._check_qr_refresh()
 
@@ -86,10 +95,15 @@ class PairingDialog(Widget):
     close_rect = rl.Rectangle(content_rect.x - pad, y - pad, close_size + pad * 2, close_size + pad * 2)
     self._close_btn.render(close_rect)
 
-    y += close_size + 40
+    y += close_size + 18
+
+    # Brand header
+    brand_rect = rl.Rectangle(content_rect.x, y, content_rect.width, 90)
+    self._render_brand_header(brand_rect)
+    y += 102
 
     # Title
-    title = tr("Pair your device to your comma account")
+    title = tr("Pair your device to your KEVELL MOTORS account")
     title_font = gui_app.font(FontWeight.NORMAL)
     left_width = int(content_rect.width * 0.5 - 15)
 
@@ -116,7 +130,7 @@ class PairingDialog(Widget):
     instructions = [
       tr("Go to https://connect.comma.ai on your phone"),
       tr("Click \"add new device\" and scan the QR code on the right"),
-      tr("Bookmark connect.comma.ai to your home screen to use it like an app"),
+      tr("Bookmark connect.comma.ai to your home screen for quick KEVELL access"),
     ]
 
     font = gui_app.font(FontWeight.BOLD)
@@ -154,9 +168,32 @@ class PairingDialog(Widget):
     source = rl.Rectangle(0, 0, self.qr_texture.width, self.qr_texture.height)
     rl.draw_texture_pro(self.qr_texture, source, rect, rl.Vector2(0, 0), 0, rl.WHITE)
 
+  def _render_brand_header(self, rect: rl.Rectangle) -> None:
+    rl.draw_rectangle_rounded(rect, 0.25, 16, rl.Color(33, 42, 56, 255))
+    rl.draw_rectangle_rounded(rl.Rectangle(rect.x, rect.y, 16, rect.height), 0.35, 16, rl.Color(78, 190, 255, 255))
+
+    text_x = rect.x + 28
+    if self.company_logo is not None:
+      # Light plate keeps dark logo variants legible against the dark header rail.
+      plate = rl.Rectangle(rect.x + 18, rect.y + 6, 242, rect.height - 12)
+      rl.draw_rectangle_rounded(plate, 0.20, 10, rl.Color(246, 248, 250, 248))
+      rl.draw_rectangle_rounded_lines(plate, 0.20, 10, rl.Color(102, 129, 150, 210))
+      source = rl.Rectangle(0, 0, self.company_logo.width, self.company_logo.height)
+      target = rl.Rectangle(rect.x + 24, rect.y + 10, 230, rect.height - 20)
+      rl.draw_texture_pro(self.company_logo, source, target, rl.Vector2(0, 0), 0, rl.WHITE)
+      text_x = rect.x + 270
+
+    title_font = gui_app.font(FontWeight.SEMI_BOLD)
+    rl.draw_text_ex(title_font, tr(COMPANY_NAME), rl.Vector2(text_x, rect.y + 16), 34, 0, rl.Color(224, 241, 255, 255))
+
+    slogan_font = gui_app.font(FontWeight.NORMAL)
+    rl.draw_text_ex(slogan_font, tr(COMPANY_SLOGAN), rl.Vector2(text_x, rect.y + 52), 26, 0, rl.Color(181, 208, 232, 255))
+
   def __del__(self):
     if self.qr_texture and self.qr_texture.id != 0:
       rl.unload_texture(self.qr_texture)
+    if self.company_logo and self.company_logo.id != 0:
+      rl.unload_texture(self.company_logo)
 
 
 if __name__ == "__main__":

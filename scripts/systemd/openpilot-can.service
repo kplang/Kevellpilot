@@ -1,0 +1,17 @@
+[Unit]
+Description=Configure Jetson SocketCAN interface for openpilot agri
+After=network-pre.target
+Before=openpilot-agri.service
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=AGRI_CAN_BITRATE=250000
+Environment=AGRI_CAN_IFACE=can0
+WorkingDirectory=__REPO_DIR__
+ExecStart=/bin/bash -lc '__REPO_DIR__/scripts/setup_jetson_can.sh ${AGRI_CAN_BITRATE} ${AGRI_CAN_IFACE}'
+ExecStop=/bin/bash -lc 'ip link set ${AGRI_CAN_IFACE} down || true'
+
+[Install]
+WantedBy=multi-user.target

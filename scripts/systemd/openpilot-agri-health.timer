@@ -1,0 +1,12 @@
+[Unit]
+Description=Run openpilot agri health check every minute
+
+[Timer]
+OnBootSec=90s
+OnUnitActiveSec=60s
+AccuracySec=5s
+Unit=openpilot-agri-health.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

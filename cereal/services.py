@@ -39,8 +39,8 @@ _services: dict[str, tuple] = {
   "roadEncodeIdx": (False, 20., 1),
   "liveTracks": (True, 20.),
   "sendcan": (True, 100., 139, QueueSize.MEDIUM),
-  "logMessage": (True, 0.),
-  "errorLogMessage": (True, 0., 1),
+  "logMessage": (True, 0., None, QueueSize.BIG),
+  "errorLogMessage": (True, 0., 1, QueueSize.BIG),
   "liveCalibration": (True, 4., 4),
   "liveTorqueParameters": (True, 4., 1),
   "liveDelay": (True, 4., 1),
@@ -103,6 +103,10 @@ _services: dict[str, tuple] = {
   "customReservedRawData0": (True, 0.),
   "customReservedRawData1": (True, 0.),
   "customReservedRawData2": (True, 0.),
+
+  # agricultural autonomy services
+  "agriMissionState": (True, 10., 1),
+  "agriSupervisorState": (True, 20., 1),
 }
 SERVICE_LIST = {name: Service(*vals) for
                 idx, (name, vals) in enumerate(_services.items())}

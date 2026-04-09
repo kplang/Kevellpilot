@@ -1,0 +1,22 @@
+[Unit]
+Description=openpilot agricultural autonomy stack (Jetson)
+After=network-online.target openpilot-can.service
+Wants=network-online.target openpilot-can.service
+
+[Service]
+Type=simple
+User=__RUN_USER__
+Group=__RUN_GROUP__
+WorkingDirectory=__REPO_DIR__
+Environment=PYTHONUNBUFFERED=1
+Environment=AGRI_MODE=1
+Environment=AGRI_SOCKETCAN=1
+Environment=AGRI_CAN_IFACES=can0,can1
+ExecStart=/bin/bash -lc '__REPO_DIR__/scripts/launch_agri_jetson.sh'
+Restart=always
+RestartSec=2
+KillSignal=SIGINT
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

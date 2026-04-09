@@ -6,7 +6,7 @@ import sys
 import time
 import traceback
 
-from cereal import log
+from cereal import car, log
 import cereal.messaging as messaging
 import openpilot.system.sentry as sentry
 from openpilot.common.utils import atomic_write
@@ -26,6 +26,7 @@ def manager_init() -> None:
   save_bootlog()
 
   build_metadata = get_build_metadata()
+  blocked = {name for name in os.getenv("BLOCK", "").split(",") if name}
 
   params = Params()
   params.clear_all(ParamKeyFlag.CLEAR_ON_MANAGER_START)
@@ -89,6 +90,9 @@ def manager_init() -> None:
 
   # preimport all processes
   for p in managed_processes.values():
+    if p.name in blocked:
+      cloudlog.info(f"skipping preimport for blocked process {p.name}")
+      continue
     p.prepare()
 
 
@@ -118,11 +122,20 @@ def manager_thread() -> None:
     ignore.append("pandad")
   ignore += [x for x in os.getenv("BLOCK", "").split(",") if len(x) > 0]
 
-  sm = messaging.SubMaster(['deviceState', 'carParams', 'pandaStates'], poll='deviceState')
   pm = messaging.PubMaster(['managerState'])
 
   write_onroad_params(False, params)
-  ensure_running(managed_processes.values(), False, params=params, CP=sm['carParams'], not_run=ignore)
+  bootstrap_cp = car.CarParams.new_message()
+  ensure_running(managed_processes.values(), False, params=params, CP=bootstrap_cp, not_run=ignore)
+
+  while True:
+    try:
+      sm = messaging.SubMaster(['deviceState', 'carParams', 'pandaStates'], poll='deviceState')
+      break
+    except messaging.IpcError as err:
+      cloudlog.warning(f"waiting for manager sockets: {err}")
+      time.sleep(0.1)
+      ensure_running(managed_processes.values(), False, params=params, CP=bootstrap_cp, not_run=ignore)
 
   started_prev = False
   ignition_prev = False

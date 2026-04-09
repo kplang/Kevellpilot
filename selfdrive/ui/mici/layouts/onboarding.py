@@ -61,7 +61,7 @@ class TrainingGuidePreDMTutorial(NavScroller):
       GreyBigButton("driver monitoring\ncheck", "scroll to continue",
                     gui_app.texture("icons_mici/setup/green_dm.png", 64, 64)),
       GreyBigButton("", "Next, we'll check if comma four can detect the driver properly."),
-      GreyBigButton("", "openpilot uses the cabin camera to check if the driver is distracted."),
+      GreyBigButton("", "KevellPilot uses the cabin camera to check if the driver is distracted."),
       GreyBigButton("", "If it does not have a clear view of the driver, unplug and remount before continuing."),
       continue_button,
     ])
@@ -233,7 +233,7 @@ class TrainingGuideRecordFront(NavScroller):
     self._scroller.add_widgets([
       GreyBigButton("driver camera data", "do you want to share video data for training?",
                     gui_app.texture("icons_mici/setup/green_dm.png", 64, 64)),
-      GreyBigButton("", "Sharing your data with comma helps improve openpilot for everyone."),
+      GreyBigButton("", "Sharing your data with comma helps improve KevellPilot for everyone."),
       self._accept_button,
       self._decline_button,
     ])
@@ -247,9 +247,9 @@ class TrainingGuideAttentionNotice(Scroller):
     continue_button.set_click_callback(continue_callback)
 
     self._scroller.add_widgets([
-      GreyBigButton("what is openpilot?", "scroll to continue",
+      GreyBigButton("what is KevellPilot?", "scroll to continue",
                     gui_app.texture("icons_mici/setup/green_info.png", 64, 64)),
-      GreyBigButton("", "1. openpilot is a driver assistance system."),
+      GreyBigButton("", "1. KevellPilot is a driver assistance system."),
       GreyBigButton("", "2. You must pay attention at all times."),
       GreyBigButton("", "3. You must be ready to take over at any time."),
       GreyBigButton("", "4. You are fully responsible for driving the car."),
@@ -318,9 +318,9 @@ class TermsPage(Scroller):
     self._decline_button = BigConfirmationCircleButton("decline &\nuninstall", gui_app.texture("icons_mici/setup/cancel.png", 64, 64), on_decline,
                                                        red=True, exit_on_confirm=False)
 
-    self._terms_header = GreyBigButton("terms and\nconditions", "scroll to continue",
+    self._terms_header = GreyBigButton("KEVELL MOTORS\nA Companion", "terms and conditions",
                                        gui_app.texture("icons_mici/setup/green_info.png", 64, 64))
-    self._must_accept_card = GreyBigButton("", "You must accept the Terms & Conditions to use openpilot.")
+    self._must_accept_card = GreyBigButton("", "You must accept the Terms & Conditions to use KevellPilot.")
 
     self._scroller.add_widgets([
       self._terms_header,

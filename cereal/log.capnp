@@ -2,7 +2,7 @@ using Cxx = import "./include/c++.capnp";
 $Cxx.namespace("cereal");
 
 using Car = import "car.capnp";
-using Legacy = import "legacy.capnp";
+using Deprecated = import "deprecated.capnp";
 using Custom = import "custom.capnp";
 
 @0xf3b1f17e25a4285b;
@@ -68,12 +68,12 @@ struct OnroadEvent @0xc4fa6047f024e718 {
     longitudinalManeuver @30;
     steerTempUnavailableSilent @31;
     resumeRequired @32;
-    preDriverDistracted @33;
-    promptDriverDistracted @34;
-    driverDistracted @35;
-    preDriverUnresponsive @36;
-    promptDriverUnresponsive @37;
-    driverUnresponsive @38;
+    driverDistracted1 @33;
+    driverDistracted2 @34;
+    driverDistracted3 @35;
+    driverUnresponsive1 @36;
+    driverUnresponsive2 @37;
+    driverUnresponsive3 @38;
     belowSteerSpeed @39;
     lowBattery @40;
     accFaulted @41;
@@ -612,6 +612,11 @@ struct PandaState @0xa7649e2575e4591e {
 
   voltage @0 :UInt32;
   current @1 :UInt32;
+
+  # these fields are not used by openpilot, but they're
+  # reserved for forks building alternate experiences.
+  controlsAllowedRESERVED1 @38 :Bool;
+  controlsAllowedRESERVED2 @39 :Bool;
 
   enum FaultStatus {
     none @0;
@@ -2176,12 +2181,14 @@ struct DriverStateV2 {
     facePosition @2 :List(Float32);
     facePositionStd @3 :List(Float32);
     faceProb @4 :Float32;
-    leftEyeProb @5 :Float32;
-    rightEyeProb @6 :Float32;
-    leftBlinkProb @7 :Float32;
-    rightBlinkProb @8 :Float32;
-    sunglassesProb @9 :Float32;
+    eyesVisibleProb @14 :Float32;
+    eyesClosedProb @15 :Float32;
     phoneProb @13 :Float32;
+    leftEyeProbDEPRECATED @5 :Float32;
+    rightEyeProbDEPRECATED @6 :Float32;
+    leftBlinkProbDEPRECATED @7 :Float32;
+    rightBlinkProbDEPRECATED @8 :Float32;
+    sunglassesProbDEPRECATED @9 :Float32;
     notReadyProbDEPRECATED @12 :List(Float32);
     occludedProbDEPRECATED @10 :Float32;
     readyProbDEPRECATED @11 :List(Float32);
@@ -2642,8 +2649,8 @@ struct Event {
     # DO change the name of the field and struct
     # DON'T change the ID (e.g. @107)
     # DON'T change which struct it points to
-    customReserved0 @107 :Custom.CustomReserved0;
-    customReserved1 @108 :Custom.CustomReserved1;
+    agriMissionState    @107 :Custom.AgriMissionState;
+    agriSupervisorState @108 :Custom.AgriSupervisorState;
     customReserved2 @109 :Custom.CustomReserved2;
     customReserved3 @110 :Custom.CustomReserved3;
     customReserved4 @111 :Custom.CustomReserved4;
@@ -2664,40 +2671,40 @@ struct Event {
     customReserved19 @145 :Custom.CustomReserved19;
 
     # *********** legacy + deprecated ***********
-    model @9 :Legacy.ModelData; # TODO: rename modelV2 and mark this as deprecated
+    model @9 :Deprecated.ModelData; # TODO: rename modelV2 and mark this as deprecated
     liveMpcDEPRECATED @36 :LiveMpcData;
     liveLongitudinalMpcDEPRECATED @37 :LiveLongitudinalMpcData;
-    liveLocationKalmanLegacyDEPRECATED @51 :Legacy.LiveLocationData;
-    orbslamCorrectionDEPRECATED @45 :Legacy.OrbslamCorrection;
-    liveUIDEPRECATED @14 :Legacy.LiveUI;
+    liveLocationKalmanDeprecatedDEPRECATED @51 :Deprecated.LiveLocationData;
+    orbslamCorrectionDEPRECATED @45 :Deprecated.OrbslamCorrection;
+    liveUIDEPRECATED @14 :Deprecated.LiveUI;
     sensorEventDEPRECATED @4 :SensorEventData;
-    liveEventDEPRECATED @8 :List(Legacy.LiveEventData);
-    liveLocationDEPRECATED @25 :Legacy.LiveLocationData;
-    ethernetDataDEPRECATED @26 :List(Legacy.EthernetPacket);
-    cellInfoDEPRECATED @28 :List(Legacy.CellInfo);
-    wifiScanDEPRECATED @29 :List(Legacy.WifiScan);
-    uiNavigationEventDEPRECATED @50 :Legacy.UiNavigationEvent;
+    liveEventDEPRECATED @8 :List(Deprecated.LiveEventData);
+    liveLocationDEPRECATED @25 :Deprecated.LiveLocationData;
+    ethernetDataDEPRECATED @26 :List(Deprecated.EthernetPacket);
+    cellInfoDEPRECATED @28 :List(Deprecated.CellInfo);
+    wifiScanDEPRECATED @29 :List(Deprecated.WifiScan);
+    uiNavigationEventDEPRECATED @50 :Deprecated.UiNavigationEvent;
     liveMapDataDEPRECATED @62 :LiveMapDataDEPRECATED;
-    gpsPlannerPointsDEPRECATED @40 :Legacy.GPSPlannerPoints;
-    gpsPlannerPlanDEPRECATED @41 :Legacy.GPSPlannerPlan;
+    gpsPlannerPointsDEPRECATED @40 :Deprecated.GPSPlannerPoints;
+    gpsPlannerPlanDEPRECATED @41 :Deprecated.GPSPlannerPlan;
     applanixRawDEPRECATED @42 :Data;
-    androidGnssDEPRECATED @30 :Legacy.AndroidGnss;
-    lidarPtsDEPRECATED @32 :Legacy.LidarPts;
-    navStatusDEPRECATED @38 :Legacy.NavStatus;
-    trafficEventsDEPRECATED @43 :List(Legacy.TrafficEvent);
-    liveLocationTimingDEPRECATED @44 :Legacy.LiveLocationData;
-    liveLocationCorrectedDEPRECATED @46 :Legacy.LiveLocationData;
-    navUpdateDEPRECATED @27 :Legacy.NavUpdate;
-    orbObservationDEPRECATED @47 :List(Legacy.OrbObservation);
-    locationDEPRECATED @49 :Legacy.LiveLocationData;
-    orbOdometryDEPRECATED @53 :Legacy.OrbOdometry;
-    orbFeaturesDEPRECATED @54 :Legacy.OrbFeatures;
-    applanixLocationDEPRECATED @55 :Legacy.LiveLocationData;
-    orbKeyFrameDEPRECATED @56 :Legacy.OrbKeyFrame;
-    orbFeaturesSummaryDEPRECATED @58 :Legacy.OrbFeaturesSummary;
-    featuresDEPRECATED @10 :Legacy.CalibrationFeatures;
-    kalmanOdometryDEPRECATED @65 :Legacy.KalmanOdometry;
-    uiLayoutStateDEPRECATED @57 :Legacy.UiLayoutState;
+    androidGnssDEPRECATED @30 :Deprecated.AndroidGnss;
+    lidarPtsDEPRECATED @32 :Deprecated.LidarPts;
+    navStatusDEPRECATED @38 :Deprecated.NavStatus;
+    trafficEventsDEPRECATED @43 :List(Deprecated.TrafficEvent);
+    liveLocationTimingDEPRECATED @44 :Deprecated.LiveLocationData;
+    liveLocationCorrectedDEPRECATED @46 :Deprecated.LiveLocationData;
+    navUpdateDEPRECATED @27 :Deprecated.NavUpdate;
+    orbObservationDEPRECATED @47 :List(Deprecated.OrbObservation);
+    locationDEPRECATED @49 :Deprecated.LiveLocationData;
+    orbOdometryDEPRECATED @53 :Deprecated.OrbOdometry;
+    orbFeaturesDEPRECATED @54 :Deprecated.OrbFeatures;
+    applanixLocationDEPRECATED @55 :Deprecated.LiveLocationData;
+    orbKeyFrameDEPRECATED @56 :Deprecated.OrbKeyFrame;
+    orbFeaturesSummaryDEPRECATED @58 :Deprecated.OrbFeaturesSummary;
+    featuresDEPRECATED @10 :Deprecated.CalibrationFeatures;
+    kalmanOdometryDEPRECATED @65 :Deprecated.KalmanOdometry;
+    uiLayoutStateDEPRECATED @57 :Deprecated.UiLayoutState;
     pandaStateDEPRECATED @12 :PandaState;
     driverStateDEPRECATED @59 :DriverStateDEPRECATED;
     sensorEventsDEPRECATED @11 :List(SensorEventData);
